@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CEP com JSON - jQuery</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="css/estilo.css">
+        <script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+        <script type="text/javascript">
+ 
+            /**
+             * Busca pelo CEP na republicavirtual e retorna o endereco
+             * @returns {json com o resultado}
+             */
+            $(document).ready(function () {
+                $('#cep').blur(function () {
+                    if ($.trim($("#cep").val()) != "") {
+                        $.getScript("http://cep.republicavirtual.com.br/web_cep.php?formato=javascript&cep=" + $("#cep").val(), function () {
+                            if (resultadoCEP["resultado"] == 1) {
+                                $("#endereco").val(unescape(resultadoCEP["tipo_logradouro"]) + " " + unescape(resultadoCEP["logradouro"]));
+                                $("#bairro").val(unescape(resultadoCEP["bairro"]));
+                                $("#cidade").val(unescape(resultadoCEP["cidade"]));
+                                $("#estado").val(unescape(resultadoCEP["uf"]));
+                            } else {
+                                alert("Não foi localizado o Endereço para o CEP informado.\n\nPor favor, digite o CEP novamente.");
+                            }
+                        });
+                    }
+                });
+            });
+ 
+            /**
+             * Formata a entrada de dados do cep
+             * @returns {undefined}
+             */
+            function Formatar(src, mask) {
+                var i = src.value.length;
+                var saida = mask.substring(0, 1);
+                var texto = mask.substring(i)
+ 
+                if (texto.substring(0, 1) != saida)
+                {
+                    src.value += texto.substring(0, 1);
+                }
+            }
+ 
+            /**
+             * Coloca o foco no campo número
+             * @returns {undefined}
+             */
+            function busca() {
+                document.cadastro.numero.focus();
+                document.cadastro.numero.select();
+                document.getElementById('numero').setAttribute("style", "background-color: yellow;");
+            }
+ 
+        </script>
+    </head>
+    <body>
+        <h1>Formulário de Exemplo - Busca CEP</h1>
+        <form name="cadastro" id="cadastro" action="Controle" method="POST">
+            <label>Nome:</label><input type="text" name="nome" class="input"><br>
+ 
+            <label>Cep:</label><input type="text" name="cep" id="cep" onkeyup="Formatar(this, '#####-###');">
+            <input type="button" value="Buscar" class="button" onclick="javascript:busca();"><br>
+ 
+            <label>Endereço:</label><input type="text" name="endereco" id="endereco" class="input">
+            &nbsp;Número: <input type="text" name="numero" id="numero" class="numero-endereco" 
+                                 onblur="javascript:this.style.backgroundColor = ''"><br>
+ 
+            <label>Bairro:</label><input type="text" name="bairro" id="bairro" class="input"><br>
+            <label>Cidade:</label><input type="text" name="cidade" id="cidade" class="input"><br>
+            <label>Estado:</label><input type="text" name="estado" id="estado"><br>
+            <input type="submit" name="btCadastrar" value="Inserir"><br><br>
+        </form>
+    </body>
+</html>
